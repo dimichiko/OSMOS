@@ -1,33 +1,89 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import { Helmet } from 'react-helmet-async';
+import axios from 'axios';
 
 const Confirmacion = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { clearCart } = useCart();
+  const { clearCart, items, getTotalPrice } = useCart();
+  const { user, token } = useAuth();
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
+  const [orderCreated, setOrderCreated] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const paymentStatus = searchParams.get('status');
+    const paymentId = searchParams.get('payment_id');
     
     setStatus(paymentStatus);
     setLoading(false);
-    
-    // Si el pago fue exitoso, limpiar el carrito
-    if (paymentStatus === 'success') {
+
+    // Si el pago fue exitoso y hay productos en el carrito, crear orden
+    if (paymentStatus === 'success' && items.length > 0 && user && token) {
+      createOrder(paymentId);
+    } else if (paymentStatus === 'success') {
+      // Si no hay productos o usuario, solo limpiar carrito
       clearCart();
     }
-  }, [searchParams]); // Removido clearCart de las dependencias
+  }, [searchParams, items, user, token]);
+
+  const createOrder = async (paymentId) => {
+    try {
+      setLoading(true);
+      
+      // Preparar datos de la orden
+      const orderData = {
+        items: items.map(item => ({
+          product: item.id || item._id, // Asegurar que tenemos el ID del producto
+          quantity: item.quantity || 1,
+          price: item.price
+        })),
+        total: getTotalPrice(),
+        status: 'approved',
+        paymentId: paymentId || `simulated_${Date.now()}`,
+        shippingAddress: {
+          name: user.nombre || user.name,
+          email: user.email,
+          address: 'Dirección de envío' // Esto se podría obtener del localStorage o contexto
+        }
+      };
+
+      // Crear la orden en el backend
+      const response = await axios.post('http://localhost:5050/api/orders', orderData, {
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.success) {
+        setOrderCreated(true);
+        setOrderId(response.data.order._id);
+        clearCart(); // Limpiar carrito después de crear la orden
+      }
+
+    } catch (err) {
+      console.error('Error creando orden:', err);
+      setError('Error al crear la orden. Contacta soporte si tienes dudas.');
+      clearCart(); // Limpiar carrito de todas formas
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusInfo = () => {
     switch (status) {
       case 'success':
         return {
-          title: '¡Pago Exitoso!',
-          message: 'Tu compra ha sido procesada correctamente. Recibirás un email de confirmación pronto.',
+          title: orderCreated ? '¡Orden Creada Exitosamente!' : '¡Pago Exitoso!',
+          message: orderCreated 
+            ? `Tu orden #${orderId?.slice(-8)} ha sido creada y procesada. Recibirás un email de confirmación pronto.`
+            : 'Tu compra ha sido procesada correctamente. Recibirás un email de confirmación pronto.',
           icon: '✅',
           color: 'text-green-600',
           bgColor: 'bg-green-50',
@@ -68,7 +124,9 @@ const Confirmacion = () => {
       <main className="min-h-screen bg-[#f8f9fb] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Procesando confirmación...</p>
+          <p className="text-gray-600">
+            {status === 'success' ? 'Procesando tu orden...' : 'Procesando confirmación...'}
+          </p>
         </div>
       </main>
     );
@@ -95,6 +153,19 @@ const Confirmacion = () => {
         <p className="text-gray-700 mb-8 text-lg leading-relaxed">
           {statusInfo.message}
         </p>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
+        {orderCreated && orderId && (
+          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mb-6">
+            <p className="font-bold">Número de Orden: #{orderId.slice(-8)}</p>
+            <p className="text-sm">Guarda este número para seguimiento</p>
+          </div>
+        )}
 
         <div className="space-y-4">
           <button
