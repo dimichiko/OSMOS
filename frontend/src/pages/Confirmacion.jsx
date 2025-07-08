@@ -12,16 +12,15 @@ const Confirmacion = () => {
 
   useEffect(() => {
     const paymentStatus = searchParams.get('status');
-
+    
     setStatus(paymentStatus);
-
+    setLoading(false);
+    
     // Si el pago fue exitoso, limpiar el carrito
     if (paymentStatus === 'success') {
       clearCart();
     }
-
-    setLoading(false);
-  }, [searchParams, clearCart]);
+  }, [searchParams]); // Removido clearCart de las dependencias
 
   const getStatusInfo = () => {
     switch (status) {
