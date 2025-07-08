@@ -1,6 +1,7 @@
 import { useCart } from '../contexts/CartContext.jsx';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import axios from 'axios';
 
 const Carrito = () => {
   const { items, getTotalPrice, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -8,6 +9,8 @@ const Carrito = () => {
   const [form, setForm] = useState({ nombre: '', email: '', direccion: '' });
   const [pago, setPago] = useState(false);
   const [manual, setManual] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (user && !manual) {
@@ -24,10 +27,44 @@ const Carrito = () => {
     updateQuantity(item, qty);
   };
 
-  const handlePagar = (e) => {
+  const handlePagar = async (e) => {
     e.preventDefault();
-    setPago(true);
-    setTimeout(() => setPago(false), 2500);
+    setLoading(true);
+    setError('');
+    setPago(false);
+
+    try {
+      // Validar que hay productos en el carrito
+      if (items.length === 0) {
+        setError('El carrito está vacío');
+        return;
+      }
+
+      // Validar datos de envío
+      if (!form.nombre || !form.email || !form.direccion) {
+        setError('Por favor completa todos los datos de envío');
+        return;
+      }
+
+      // Crear preferencia de pago
+      const response = await axios.post('http://localhost:5050/api/payments/create-preference', {
+        items: items,
+        total: getTotalPrice()
+      });
+
+      if (response.data.success && response.data.init_point) {
+        // Redirigir a Mercado Pago
+        window.location.href = response.data.init_point;
+      } else {
+        setError('Error al procesar el pago');
+      }
+
+    } catch (err) {
+      console.error('Error en pago:', err);
+      setError(err.response?.data?.error || 'Error al procesar el pago. Intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (items.length === 0) {
@@ -78,6 +115,11 @@ const Carrito = () => {
           {/* Formulario de envío y pago */}
           <form className="space-y-6" onSubmit={handlePagar} autoComplete="off">
             <h2 className="text-xl font-bold text-blue-800 mb-4">Datos de envío</h2>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
             <div className="flex gap-2 items-center">
               <div className="flex-1">
                 <label className="block text-gray-700 font-semibold mb-1">Nombre completo</label>
@@ -97,7 +139,17 @@ const Carrito = () => {
               <label className="block text-gray-700 font-semibold mb-1">Dirección</label>
               <input name="direccion" value={form.direccion} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
             </div>
-            <button type="submit" className="w-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold px-8 py-3 rounded-full shadow hover:from-blue-700 hover:to-indigo-800 transition text-lg">Pagar ahora</button>
+            <button 
+              type="submit" 
+              disabled={loading}
+              className={`w-full font-bold px-8 py-3 rounded-full shadow transition text-lg ${
+                loading 
+                  ? 'bg-gray-400 text-white cursor-not-allowed' 
+                  : 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800'
+              }`}
+            >
+              {loading ? 'Procesando pago...' : 'Pagar con Mercado Pago'}
+            </button>
             {pago && <div className="text-green-600 font-bold text-center mt-4">¡Pago simulado exitoso! (Integración real pendiente)</div>}
           </form>
         </div>
