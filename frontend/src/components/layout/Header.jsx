@@ -1,12 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "../../contexts/CartContext.jsx";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 import "./Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showCartPreview, setShowCartPreview] = useState(false);
   const { items, totalItems, getTotalPrice } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", { 
@@ -15,6 +18,11 @@ const Header = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(price);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -33,10 +41,34 @@ const Header = () => {
         </nav>
 
         <div className="actions">
-          <Link to="/login" className="loginBtn" aria-label="Iniciar sesión">
-            <span className="loginIcon">👤</span>
-            Login
-          </Link>
+          {isAuthenticated ? (
+            <div className="userMenu">
+              <Link to="/perfil" className="userBtn" aria-label="Mi perfil">
+                <span className="userIcon">👤</span>
+                {user?.nombre || 'Mi Perfil'}
+              </Link>
+              <button 
+                onClick={handleLogout} 
+                className="logoutBtn" 
+                aria-label="Cerrar sesión"
+              >
+                <span className="logoutIcon">🚪</span>
+                Salir
+              </button>
+            </div>
+          ) : (
+            <div className="authButtons">
+              <Link to="/login" className="loginBtn" aria-label="Iniciar sesión">
+                <span className="loginIcon">👤</span>
+                Login
+              </Link>
+              <Link to="/signup" className="signupBtn" aria-label="Registrarse">
+                <span className="signupIcon">📝</span>
+                Registro
+              </Link>
+            </div>
+          )}
+          
           <div 
             className="cartBtn"
             onMouseEnter={() => setShowCartPreview(true)}
@@ -92,7 +124,17 @@ const Header = () => {
           <Link to="/sobre-nosotros" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Nosotros</Link>
           <Link to="/contacto" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Contacto</Link>
           <Link to="/carrito" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Carrito</Link>
-          <Link to="/login" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Login</Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/perfil" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Mi Perfil</Link>
+              <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobileLink" role="menuitem" tabIndex={0}>Cerrar Sesión</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Login</Link>
+              <Link to="/signup" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Registro</Link>
+            </>
+          )}
         </div>
       )}
     </header>

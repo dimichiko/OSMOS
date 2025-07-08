@@ -8,9 +8,14 @@ import Productos from "./pages/Productos";
 import ProductoDetalle from "./pages/ProductoDetalle";
 import Carrito from "./pages/Carrito";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Perfil from "./pages/Perfil";
 import Checkout from "./pages/Checkout";
 import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
+
+// Components
+import RutaPrivada from "./components/RutaPrivada";
 
 const Router = () => {
   return (
@@ -23,6 +28,15 @@ const Router = () => {
             <Route path="producto/:slug" element={<ProductoDetalle />} />
             <Route path="carrito" element={<Carrito />} />
             <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+            <Route 
+              path="perfil" 
+              element={
+                <RutaPrivada>
+                  <Perfil />
+                </RutaPrivada>
+              } 
+            />
             <Route path="checkout" element={<Checkout />} />
             <Route path="sobre-nosotros" element={<Nosotros />} />
             <Route path="contacto" element={<Contacto />} />
