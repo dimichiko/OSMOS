@@ -61,7 +61,8 @@ const Carrito = () => {
 
     } catch (err) {
       console.error('Error en pago:', err);
-      setError(err.response?.data?.error || 'Error al procesar el pago. Intenta de nuevo.');
+      const errorMsg = err.response?.data?.error || 'Error al procesar el pago.';
+      setError(`${errorMsg} Si persiste el problema, usa el botón "Pago Simulado" para testing.`);
     } finally {
       setLoading(false);
     }
@@ -149,6 +150,20 @@ const Carrito = () => {
               }`}
             >
               {loading ? 'Procesando pago...' : 'Pagar con Mercado Pago'}
+            </button>
+            <button 
+              type="button"
+              onClick={() => {
+                setPago(true);
+                setTimeout(() => {
+                  setPago(false);
+                  clearCart();
+                  window.location.href = '/confirmacion?status=success';
+                }, 2000);
+              }}
+              className="w-full bg-green-600 text-white font-bold px-8 py-3 rounded-full shadow hover:bg-green-700 transition text-lg mt-2"
+            >
+              💳 Pago Simulado (Para Testing)
             </button>
             {pago && <div className="text-green-600 font-bold text-center mt-4">¡Pago simulado exitoso! (Integración real pendiente)</div>}
           </form>
