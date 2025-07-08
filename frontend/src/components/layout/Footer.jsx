@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 const Footer = () => {
@@ -41,11 +42,11 @@ const Footer = () => {
           <div className="footer__link-section">
             <h4 className="footer__section-title">NAVEGACIÓN</h4>
             <div className="footer__link-list">
-              <a href="/" className="footer__link">Inicio</a>
-              <a href="/productos" className="footer__link">Todos los Productos</a>
-              <a href="/categorias" className="footer__link">Categorías</a>
-              <a href="/sobre-nosotros" className="footer__link">Sobre Osmos</a>
-              <a href="/contacto" className="footer__link">Contacto</a>
+              <Link to="/" className="footer__link">Inicio</Link>
+              <Link to="/productos" className="footer__link">Todos los Productos</Link>
+              <Link to="/categorias" className="footer__link">Categorías</Link>
+              <Link to="/sobre-nosotros" className="footer__link">Sobre Osmos</Link>
+              <Link to="/contacto" className="footer__link">Contacto</Link>
             </div>
           </div>
 
@@ -53,11 +54,11 @@ const Footer = () => {
           <div className="footer__link-section">
             <h4 className="footer__section-title">SERVICIO AL CLIENTE</h4>
             <div className="footer__link-list">
-              <a href="/ayuda" className="footer__link">Centro de Ayuda</a>
-              <a href="/envios" className="footer__link">Envíos</a>
-              <a href="/devoluciones" className="footer__link">Devoluciones</a>
-              <a href="/mayoreo" className="footer__link">Ventas por Mayor</a>
-              <a href="/terminos" className="footer__link">Términos y Condiciones</a>
+              <Link to="/ayuda" className="footer__link">Centro de Ayuda</Link>
+              <Link to="/envios" className="footer__link">Envíos</Link>
+              <Link to="/devoluciones" className="footer__link">Devoluciones</Link>
+              <Link to="/mayoreo" className="footer__link">Ventas por Mayor</Link>
+              <Link to="/terminos" className="footer__link">Términos y Condiciones</Link>
             </div>
           </div>
 
@@ -68,7 +69,6 @@ const Footer = () => {
               <strong>Suscríbete</strong> para recibir ofertas exclusivas, nuevos sabores 
               y <strong>DESCUENTOS ESPECIALES</strong> directamente en tu email.
             </p>
-            
             {isSubscribed ? (
               <div className="footer__success-message" role="status" aria-live="polite" style={{ color: '#16a34a', fontWeight: 700 }}>
                 ✅ ¡Gracias por suscribirte! Revisa tu email.
@@ -94,7 +94,6 @@ const Footer = () => {
                 </div>
               </form>
             )}
-
             <div className="footer__benefits">
               <div className="footer__benefit">✨ Ofertas exclusivas</div>
               <div className="footer__benefit">🚀 Nuevos productos</div>
@@ -110,11 +109,11 @@ const Footer = () => {
               © {new Date().getFullYear()} Osmos Electrolitos. Todos los derechos reservados.
             </p>
             <div className="footer__legal-links">
-              <a href="/privacidad" className="footer__legal-link">Privacidad</a>
+              <Link to="/privacidad" className="footer__legal-link">Privacidad</Link>
               <span className="footer__separator">•</span>
-              <a href="/cookies" className="footer__legal-link">Cookies</a>
+              <Link to="/cookies" className="footer__legal-link">Cookies</Link>
               <span className="footer__separator">•</span>
-              <a href="/terminos" className="footer__legal-link">Términos</a>
+              <Link to="/terminos" className="footer__legal-link">Términos</Link>
             </div>
           </div>
 

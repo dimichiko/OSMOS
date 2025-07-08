@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    contraseña: ''
+    password: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,13 +27,13 @@ const Login = () => {
 
     try {
       const response = await axios.post('http://localhost:5050/api/login', formData);
-      if (response.data.ok) {
+      if (response.data.ok || response.data.token) {
         // Usar el contexto para login
         login(response.data.user, response.data.token);
         navigate('/perfil');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al iniciar sesión');
+      setError(err.response?.data?.msg || err.response?.data?.message || err.response?.data?.error || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
@@ -62,12 +62,12 @@ const Login = () => {
             </div>
             <div>
               <input
-                name="contraseña"
+                name="password"
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Contraseña"
-                value={formData.contraseña}
+                value={formData.password}
                 onChange={handleChange}
               />
             </div>

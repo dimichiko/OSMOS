@@ -259,9 +259,12 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background: var(--white);
+  background: #fff;
+  /* Fondo blanco sólido */
+  backdrop-filter: blur(8px);
+  /* Blur suave para separar del fondo */
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18), 0 2px 8px 0 rgba(0,0,0,0.10);
   border: 1px solid #f0f0f0;
   width: 320px;
   z-index: 1000;

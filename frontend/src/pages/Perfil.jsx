@@ -14,46 +14,35 @@ const Perfil = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-6">
-              Mi Perfil
-            </h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nombre
-                </label>
-                <div className="mt-1 p-3 bg-gray-50 border border-gray-300 rounded-md">
-                  <span className="text-gray-900">{user.nombre}</span>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <div className="mt-1 p-3 bg-gray-50 border border-gray-300 rounded-md">
-                  <span className="text-gray-900">{user.email}</span>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Rol
-                </label>
-                <div className="mt-1 p-3 bg-gray-50 border border-gray-300 rounded-md">
-                  <span className="text-gray-900 capitalize">{user.role || 'usuario'}</span>
-                </div>
-              </div>
-            </div>
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-16 px-4 flex items-center justify-center">
+      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center">
+        {/* Avatar */}
+        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 flex items-center justify-center mb-6 shadow-lg">
+          <span className="text-5xl text-white font-bold select-none">
+            {user.nombre ? user.nombre[0].toUpperCase() : user.name[0].toUpperCase()}
+          </span>
+        </div>
+        <h1 className="text-3xl font-extrabold text-blue-900 mb-2">Mi Perfil</h1>
+        <p className="text-gray-500 mb-8 text-center max-w-md">Gestiona tu información personal y revisa tus datos de cuenta.</p>
+        <div className="w-full flex flex-col gap-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <span className="w-32 font-semibold text-gray-700">Nombre:</span>
+            <span className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-900">{user.nombre || user.name}</span>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <span className="w-32 font-semibold text-gray-700">Email:</span>
+            <span className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-900">{user.email || user.correo || user.mail || 'No disponible'}</span>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <span className="w-32 font-semibold text-gray-700">Rol:</span>
+            <span className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-900 capitalize">{user.role || 'usuario'}</span>
           </div>
         </div>
+        <div className="mt-10 w-full flex flex-col items-center">
+          <button className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold px-8 py-3 rounded-full shadow hover:from-blue-700 hover:to-indigo-800 transition text-lg">Editar Perfil</button>
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

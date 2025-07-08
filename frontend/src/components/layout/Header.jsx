@@ -37,7 +37,6 @@ const Header = () => {
           <Link to="/" className="link">Inicio</Link>
           <Link to="/productos" className="link">Productos</Link>
           <Link to="/sobre-nosotros" className="link">Nosotros</Link>
-          <Link to="/contacto" className="link">Contacto</Link>
         </nav>
 
         <div className="actions">
@@ -122,7 +121,10 @@ const Header = () => {
           <Link to="/" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Inicio</Link>
           <Link to="/productos" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Productos</Link>
           <Link to="/sobre-nosotros" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Nosotros</Link>
-          <Link to="/contacto" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Contacto</Link>
+          <Link to="/envios" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Envíos</Link>
+          <Link to="/devoluciones" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Devoluciones</Link>
+          <Link to="/mayoreo" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Ventas por Mayor</Link>
+          <Link to="/terminos" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Términos</Link>
           <Link to="/carrito" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Carrito</Link>
           {isAuthenticated ? (
             <>
