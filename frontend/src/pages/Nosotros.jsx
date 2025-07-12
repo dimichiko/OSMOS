@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Award, Users, Globe, Heart, Zap, Leaf, Target, Star } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom'; // Added Link import
 
 const Nosotros = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -110,36 +111,41 @@ const Nosotros = () => {
       <script type="application/ld+json">{JSON.stringify(teamJsonLd)}</script>
 
       {/* HERO SECTION */}
-      <header className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white py-20 overflow-hidden">
+      <header className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white py-12 md:py-20 overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-indigo-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-cyan-400 rounded-full blur-2xl animate-bounce"></div>
+          <div className="absolute top-10 left-10 w-24 md:w-32 h-24 md:h-32 bg-blue-400 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-32 md:w-48 h-32 md:h-48 bg-indigo-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 w-16 md:w-24 h-16 md:h-24 bg-cyan-400 rounded-full blur-2xl animate-bounce"></div>
         </div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <div className="inline-flex items-center bg-blue-800/50 backdrop-blur-sm rounded-full px-6 py-2 mb-6 border border-blue-300/20">
-            <Zap className="w-4 h-4 mr-2 text-yellow-400" />
-            <span className="text-sm font-medium">Revolucionando la hidratación desde 2020</span>
+          <div className="inline-flex items-center bg-blue-800/50 backdrop-blur-sm rounded-full px-4 md:px-6 py-2 mb-4 md:mb-6 border border-blue-300/20">
+            <Zap className="w-3 md:w-4 h-3 md:h-4 mr-2 text-yellow-400" />
+            <span className="text-xs md:text-sm font-medium">Revolucionando la hidratación desde 2020</span>
           </div>
           
-          <h1 className="font-black text-5xl md:text-7xl mb-6 tracking-tight">
+          <h1 className="font-black text-3xl md:text-5xl lg:text-7xl mb-4 md:mb-6 tracking-tight">
             Sobre <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">OSMOS</span>
           </h1>
           
-          <p className="text-xl md:text-2xl opacity-90 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl lg:text-2xl opacity-90 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
             Donde la ciencia más avanzada se encuentra con la naturaleza para crear la hidratación perfecta
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center">
-              Descubre nuestra historia
-              <ChevronRight className="w-5 h-5 ml-2" />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              onClick={() => document.getElementById('historia').scrollIntoView({ behavior: 'smooth' })}
+              className="bg-white text-blue-900 font-bold px-6 md:px-8 py-3 rounded-full hover:bg-blue-50 transition text-sm md:text-base"
+            >
+              Nuestra Historia
             </button>
-            <button className="border-2 border-white/30 hover:border-white text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/10 backdrop-blur-sm">
-              Ver productos
-            </button>
+            <Link 
+              to="/productos" 
+              className="bg-blue-700 text-white font-bold px-6 md:px-8 py-3 rounded-full hover:bg-blue-800 transition border-2 border-white text-sm md:text-base"
+            >
+              Ver Productos
+            </Link>
           </div>
         </div>
       </header>

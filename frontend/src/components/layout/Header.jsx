@@ -44,26 +44,27 @@ const Header = () => {
             <div className="userMenu">
               <Link to="/perfil" className="userBtn" aria-label="Mi perfil">
                 <span className="userIcon">👤</span>
-                {user?.nombre || 'Mi Perfil'}
+                <span className="userText">{user?.nombre || 'Mi Perfil'}</span>
               </Link>
+              <div className="userMenuDivider"></div>
               <button 
                 onClick={handleLogout} 
                 className="logoutBtn" 
                 aria-label="Cerrar sesión"
               >
                 <span className="logoutIcon">🚪</span>
-                Salir
+                <span className="logoutText">Salir</span>
               </button>
             </div>
           ) : (
             <div className="authButtons">
               <Link to="/login" className="loginBtn" aria-label="Iniciar sesión">
                 <span className="loginIcon">👤</span>
-                Login
+                <span className="loginText">Login</span>
               </Link>
               <Link to="/signup" className="signupBtn" aria-label="Registrarse">
                 <span className="signupIcon">📝</span>
-                Registro
+                <span className="signupText">Registro</span>
               </Link>
             </div>
           )}
@@ -118,24 +119,62 @@ const Header = () => {
 
       {isMenuOpen && (
         <div className="mobileMenu" id="mobileMenuNav" role="menu">
-          <Link to="/" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Inicio</Link>
-          <Link to="/productos" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Productos</Link>
-          <Link to="/sobre-nosotros" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Nosotros</Link>
-          <Link to="/envios" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Envíos</Link>
-          <Link to="/devoluciones" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Devoluciones</Link>
-          <Link to="/mayoreo" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Ventas por Mayor</Link>
-          <Link to="/terminos" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Términos</Link>
-          <Link to="/carrito" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Carrito</Link>
+          <div className="mobileMenuHeader">
+            <h3>Menú</h3>
+            <button 
+              onClick={() => setIsMenuOpen(false)} 
+              className="mobileMenuClose"
+              aria-label="Cerrar menú"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="mobileMenuSection">
+            <h4 className="mobileMenuSectionTitle">Navegación</h4>
+            <Link to="/" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+              <span className="mobileLinkIcon">🏠</span>
+              <span>Inicio</span>
+            </Link>
+            <Link to="/productos" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+              <span className="mobileLinkIcon">🛍️</span>
+              <span>Productos</span>
+            </Link>
+            <Link to="/sobre-nosotros" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+              <span className="mobileLinkIcon">👥</span>
+              <span>Nosotros</span>
+            </Link>
+            <Link to="/carrito" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+              <span className="mobileLinkIcon">🛒</span>
+              <span>Carrito</span>
+              {totalItems > 0 && <span className="mobileCartBadge">{totalItems}</span>}
+            </Link>
+          </div>
+
           {isAuthenticated ? (
-            <>
-              <Link to="/perfil" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Mi Perfil</Link>
-              <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobileLink" role="menuitem" tabIndex={0}>Cerrar Sesión</button>
-            </>
+            <div className="mobileMenuSection">
+              <h4 className="mobileMenuSectionTitle">Mi Cuenta</h4>
+              <Link to="/perfil" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+                <span className="mobileLinkIcon">👤</span>
+                <span>Mi Perfil</span>
+              </Link>
+              <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobileLink mobileLogoutBtn" role="menuitem" tabIndex={0}>
+                <span className="mobileLinkIcon">🚪</span>
+                <span>Cerrar Sesión</span>
+              </button>
+            </div>
           ) : (
-            <>
-              <Link to="/login" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Login</Link>
-              <Link to="/signup" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>Registro</Link>
-            </>
+            <div className="mobileMenuSection">
+              <h4 className="mobileMenuSectionTitle">Acceso</h4>
+              <Link to="/login" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+                <span className="mobileLinkIcon">🔑</span>
+                <span>Login</span>
+              </Link>
+              <Link to="/signup" className="mobileLink" onClick={() => setIsMenuOpen(false)} role="menuitem" tabIndex={0}>
+                <span className="mobileLinkIcon">📝</span>
+                <span>Registro</span>
+              </Link>
+            </div>
           )}
         </div>
       )}

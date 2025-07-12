@@ -1,69 +1,61 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const compression = require('compression');
-const morgan = require('morgan');
-const userRoutes = require('./routes/userRoutes');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-dotenv.config();
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const paymentsRoutes = require('./routes/paymentsRoutes');
+
 const app = express();
 
-// CORS primero
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-// Middleware de seguridad
-app.use(helmet());
+// Configuración para deploy
+const PORT = process.env.PORT || 5050;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/osmos';
 
-// Rate limiting solo en producción
-if (process.env.NODE_ENV !== 'development') {
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // máximo 100 requests por ventana
-    message: 'Demasiadas requests desde esta IP'
-  });
-  app.use('/api/', limiter);
-}
-
-// Logging
-app.use(morgan('combined'));
-
-// Compresión
-app.use(compression());
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Middleware de manejo de errores global
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Error interno del servidor' 
-  });
-});
+// Conexión a MongoDB
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Conectado a MongoDB'))
+  .catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
 // Rutas
 app.use('/api', userRoutes);
-app.use('/api/product', require('./routes/productRoutes')); //http://localhost:5050/api/product
-app.use('/api/order', require('./routes/orderRoutes')); //http://localhost:5050/api/order
-app.use('/api/payments', require('./routes/paymentsRoutes')); //http://localhost:5050/api/payments
+app.use('/api', productRoutes);
+app.use('/api', orderRoutes);
+app.use('/api', paymentsRoutes);
 
-// Ruta de health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+// Ruta de prueba para verificar que el servidor funciona
+app.get('/', (req, res) => {
+  res.json({ 
+    message: '🚀 OSMOS API funcionando correctamente',
+    version: '1.0.0',
+    status: 'online'
+  });
 });
 
-// Conexión Mongo + levantar servidor
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ Conectado a MongoDB');
-    app.listen(process.env.PORT, () =>
-      console.log(`🚀 Servidor corriendo en puerto ${process.env.PORT}`)
-    );
-  })
-  .catch(err => {
-    console.error('❌ Error conectando a MongoDB:', err);
-    process.exit(1);
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: '❌ Error interno del servidor',
+    message: err.message 
   });
+});
+
+// Ruta para manejar rutas no encontradas
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    error: '❌ Ruta no encontrada',
+    message: `La ruta ${req.originalUrl} no existe` 
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`🌐 URL: http://localhost:${PORT}`);
+});

@@ -11,16 +11,16 @@ const cartReducer = (state, action) => {
           ...state,
           items: state.items.map(item =>
             item.id === action.payload.id
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + (action.payload.quantity || 1) }
               : item
           ),
-          totalItems: state.totalItems + 1
+          totalItems: state.totalItems + (action.payload.quantity || 1)
         };
       } else {
         return {
           ...state,
-          items: [...state.items, { ...action.payload, quantity: 1 }],
-          totalItems: state.totalItems + 1
+          items: [...state.items, { ...action.payload, quantity: action.payload.quantity || 1 }],
+          totalItems: state.totalItems + (action.payload.quantity || 1)
         };
       }
     }
@@ -33,18 +33,16 @@ const cartReducer = (state, action) => {
       };
     
     case 'UPDATE_QUANTITY': {
+      const updatedItems = state.items.map(item =>
+        item.id === action.payload.id
+          ? { ...item, quantity: action.payload.quantity }
+          : item
+      );
+      
       return {
         ...state,
-        items: state.items.map(item =>
-          item.id === action.payload.id
-            ? { ...item, quantity: action.payload.quantity }
-            : item
-        ),
-        totalItems: state.items.reduce((total, item) => 
-          item.id === action.payload.id 
-            ? total + action.payload.quantity 
-            : total + item.quantity, 0
-        )
+        items: updatedItems,
+        totalItems: updatedItems.reduce((total, item) => total + item.quantity, 0)
       };
     }
     

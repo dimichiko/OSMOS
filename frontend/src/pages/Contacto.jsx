@@ -13,6 +13,7 @@ const Contacto = () => {
 
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -36,6 +37,7 @@ const Contacto = () => {
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
+      setIsSubmitting(true);
       try {
         const res = await axios.post('/api/contacto', formData);
         setSuccess(res.data.message);
@@ -49,6 +51,8 @@ const Contacto = () => {
           setErrors({ general: 'Error de servidor. Intenta más tarde.' });
         }
         setSuccess("");
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       setSuccess("");
@@ -136,40 +140,40 @@ const Contacto = () => {
         <p className="text-lg md:text-xl opacity-90 max-w-xl mx-auto">Estamos aquí para ayudarte. ¡Hablemos!</p>
       </header>
 
-      <section className="max-w-6xl mx-auto px-4 mb-16">
-        <div className="grid md:grid-cols-2 gap-10">
+      <section className="max-w-6xl mx-auto px-4 mb-12 md:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
           {/* INFORMACIÓN DE CONTACTO */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 flex flex-col gap-6 justify-center">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-blue-800 mb-4 text-center md:text-left">Información de Contacto</h2>
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">📍</span>
+          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 lg:p-12 flex flex-col gap-4 md:gap-6 justify-center">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-blue-800 mb-4 text-center lg:text-left">Información de Contacto</h2>
+            <div className="flex items-start gap-3 md:gap-4">
+              <span className="text-xl md:text-2xl">📍</span>
               <div>
-                <h3 className="font-semibold text-blue-700">Dirección</h3>
-                <p className="text-gray-600 text-sm">Av. Principal 123<br />Ciudad Deportiva, CD 12345</p>
+                <h3 className="font-semibold text-blue-700 text-sm md:text-base">Dirección</h3>
+                <p className="text-gray-600 text-xs md:text-sm">Av. Principal 123<br />Ciudad Deportiva, CD 12345</p>
               </div>
             </div>
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">📞</span>
+            <div className="flex items-start gap-3 md:gap-4">
+              <span className="text-xl md:text-2xl">📞</span>
               <div>
-                <h3 className="font-semibold text-blue-700">Teléfono</h3>
-                <p className="text-gray-600 text-sm">+1 (555) 123-4567</p>
-                <p className="text-gray-600 text-sm">+1 (555) 987-6543</p>
+                <h3 className="font-semibold text-blue-700 text-sm md:text-base">Teléfono</h3>
+                <p className="text-gray-600 text-xs md:text-sm">+1 (555) 123-4567</p>
+                <p className="text-gray-600 text-xs md:text-sm">+1 (555) 987-6543</p>
               </div>
             </div>
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">✉️</span>
+            <div className="flex items-start gap-3 md:gap-4">
+              <span className="text-xl md:text-2xl">✉️</span>
               <div>
-                <h3 className="font-semibold text-blue-700">Email</h3>
-                <p className="text-gray-600 text-sm">info@osmos.com</p>
-                <p className="text-gray-600 text-sm">soporte@osmos.com</p>
+                <h3 className="font-semibold text-blue-700 text-sm md:text-base">Email</h3>
+                <p className="text-gray-600 text-xs md:text-sm">info@osmos.com</p>
+                <p className="text-gray-600 text-xs md:text-sm">soporte@osmos.com</p>
               </div>
             </div>
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">🕒</span>
+            <div className="flex items-start gap-3 md:gap-4">
+              <span className="text-xl md:text-2xl">🕒</span>
               <div>
-                <h3 className="font-semibold text-blue-700">Horarios</h3>
-                <p className="text-gray-600 text-sm">Lunes - Viernes: 9:00 AM - 6:00 PM</p>
-                <p className="text-gray-600 text-sm">Sábados: 10:00 AM - 4:00 PM</p>
+                <h3 className="font-semibold text-blue-700 text-sm md:text-base">Horarios</h3>
+                <p className="text-gray-600 text-xs md:text-sm">Lunes - Viernes: 9:00 AM - 6:00 PM</p>
+                <p className="text-gray-600 text-xs md:text-sm">Sábados: 10:00 AM - 4:00 PM</p>
               </div>
             </div>
             <div>
@@ -184,67 +188,74 @@ const Contacto = () => {
           </div>
 
           {/* FORMULARIO */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 flex flex-col justify-center">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-blue-800 mb-6 text-center">Envíanos un Mensaje</h2>
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate aria-label="Formulario de contacto" role="form">
+          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 lg:p-12 flex flex-col justify-center">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-blue-800 mb-6 text-center">Envíanos un Mensaje</h2>
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5" noValidate aria-label="Formulario de contacto" role="form">
               <div>
-                <label htmlFor="nombre" className="block font-semibold text-blue-700 mb-1">Nombre Completo *</label>
-                <input type="text" id="nombre" name="nombre" value={formData.nombre} onChange={handleChange} required className={`w-full border ${errors.nombre ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700`} aria-invalid={!!errors.nombre} aria-describedby="error-nombre" />
-                {errors.nombre && <p id="error-nombre" className="text-red-500 text-sm mt-1" role="alert">{errors.nombre}</p>}
+                <label htmlFor="nombre" className="block font-semibold text-blue-700 mb-1 text-sm md:text-base">Nombre Completo *</label>
+                <input type="text" id="nombre" name="nombre" value={formData.nombre} onChange={handleChange} required className={`w-full border ${errors.nombre ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm md:text-base`} aria-invalid={!!errors.nombre} aria-describedby="error-nombre" />
+                {errors.nombre && <p id="error-nombre" className="text-red-500 text-xs md:text-sm mt-1" role="alert">{errors.nombre}</p>}
               </div>
               <div>
-                <label htmlFor="email" className="block font-semibold text-blue-700 mb-1">Email *</label>
-                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required className={`w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700`} aria-invalid={!!errors.email} aria-describedby="error-email" />
-                {errors.email && <p id="error-email" className="text-red-500 text-sm mt-1" role="alert">{errors.email}</p>}
+                <label htmlFor="email" className="block font-semibold text-blue-700 mb-1 text-sm md:text-base">Email *</label>
+                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required className={`w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm md:text-base`} aria-invalid={!!errors.email} aria-describedby="error-email" />
+                {errors.email && <p id="error-email" className="text-red-500 text-xs md:text-sm mt-1" role="alert">{errors.email}</p>}
               </div>
               <div>
-                <label htmlFor="telefono" className="block font-semibold text-blue-700 mb-1">Teléfono</label>
-                <input type="tel" id="telefono" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700" />
+                <label htmlFor="telefono" className="block font-semibold text-blue-700 mb-1 text-sm md:text-base">Teléfono</label>
+                <input type="tel" id="telefono" name="telefono" value={formData.telefono} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm md:text-base" />
               </div>
               <div>
-                <label htmlFor="asunto" className="block font-semibold text-blue-700 mb-1">Asunto *</label>
-                <select id="asunto" name="asunto" value={formData.asunto} onChange={handleChange} required className={`w-full border ${errors.asunto ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700`} aria-invalid={!!errors.asunto} aria-describedby="error-asunto">
+                <label htmlFor="asunto" className="block font-semibold text-blue-700 mb-1 text-sm md:text-base">Asunto *</label>
+                <select id="asunto" name="asunto" value={formData.asunto} onChange={handleChange} required className={`w-full border ${errors.asunto ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm md:text-base`} aria-invalid={!!errors.asunto} aria-describedby="error-asunto">
                   <option value="">Selecciona un asunto</option>
-                  <option value="productos">Consulta sobre Productos</option>
-                  <option value="pedidos">Estado de Pedidos</option>
-                  <option value="devoluciones">Devoluciones</option>
-                  <option value="soporte">Soporte Técnico</option>
-                  <option value="otros">Otros</option>
+                  <option value="consulta">Consulta general</option>
+                  <option value="pedido">Información de pedidos</option>
+                  <option value="devolucion">Devoluciones y cambios</option>
+                  <option value="soporte">Soporte técnico</option>
+                  <option value="mayoreo">Ventas por mayor</option>
+                  <option value="otro">Otro</option>
                 </select>
-                {errors.asunto && <p id="error-asunto" className="text-red-500 text-sm mt-1" role="alert">{errors.asunto}</p>}
+                {errors.asunto && <p id="error-asunto" className="text-red-500 text-xs md:text-sm mt-1" role="alert">{errors.asunto}</p>}
               </div>
               <div>
-                <label htmlFor="mensaje" className="block font-semibold text-blue-700 mb-1">Mensaje *</label>
-                <textarea id="mensaje" name="mensaje" rows="5" value={formData.mensaje} onChange={handleChange} required placeholder="Cuéntanos cómo podemos ayudarte..." className={`w-full border ${errors.mensaje ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700`} aria-invalid={!!errors.mensaje} aria-describedby="error-mensaje"></textarea>
-                {errors.mensaje && <p id="error-mensaje" className="text-red-500 text-sm mt-1" role="alert">{errors.mensaje}</p>}
+                <label htmlFor="mensaje" className="block font-semibold text-blue-700 mb-1 text-sm md:text-base">Mensaje *</label>
+                <textarea id="mensaje" name="mensaje" value={formData.mensaje} onChange={handleChange} required rows="4" className={`w-full border ${errors.mensaje ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm md:text-base resize-none`} aria-invalid={!!errors.mensaje} aria-describedby="error-mensaje" placeholder="Escribe tu mensaje aquí..."></textarea>
+                {errors.mensaje && <p id="error-mensaje" className="text-red-500 text-xs md:text-sm mt-1" role="alert">{errors.mensaje}</p>}
               </div>
-              <button type="submit" className="w-full bg-gradient-to-br from-blue-700 to-blue-900 text-white font-bold py-3 rounded-lg shadow-md hover:from-blue-800 hover:to-blue-900 transition">Enviar Mensaje</button>
-              {success && <div className="text-green-600 text-center mt-4" role="status" aria-live="polite">{success}</div>}
-              {errors.general && <div className="text-red-600 text-center mb-2" role="alert">{errors.general}</div>}
+              <button type="submit" disabled={isSubmitting} className={`w-full font-bold py-3 md:py-4 px-6 md:px-8 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95 text-sm md:text-base ${
+                isSubmitting 
+                  ? 'bg-gray-400 text-white cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800'
+              }`}>
+                {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
+              </button>
+              {success && <div className="text-green-600 text-center mt-4 text-sm md:text-base" role="status" aria-live="polite">{success}</div>}
+              {errors.general && <div className="text-red-600 text-center mb-2 text-sm md:text-base" role="alert">{errors.general}</div>}
             </form>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="max-w-4xl mx-auto px-4 mb-20">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-blue-800 mb-8 text-center">Preguntas Frecuentes</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h3 className="font-semibold text-blue-700 mb-2">¿Cómo puedo hacer un pedido?</h3>
-            <p className="text-gray-600 text-sm">Puedes hacer tu pedido a través de nuestra tienda online o contactándonos directamente por teléfono o email.</p>
+      <section className="max-w-4xl mx-auto px-4 mb-16 md:mb-20">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-blue-800 mb-6 md:mb-8 text-center">Preguntas Frecuentes</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6">
+            <h3 className="font-semibold text-blue-700 mb-2 text-sm md:text-base">¿Cómo puedo hacer un pedido?</h3>
+            <p className="text-gray-600 text-xs md:text-sm">Puedes hacer tu pedido a través de nuestra tienda online o contactándonos directamente por teléfono o email.</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h3 className="font-semibold text-blue-700 mb-2">¿Cuánto tiempo tarda la entrega?</h3>
-            <p className="text-gray-600 text-sm">Los envíos estándar tardan 3-5 días hábiles. Ofrecemos envío express para entregas más rápidas.</p>
+          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6">
+            <h3 className="font-semibold text-blue-700 mb-2 text-sm md:text-base">¿Cuánto tiempo tarda la entrega?</h3>
+            <p className="text-gray-600 text-xs md:text-sm">Los envíos estándar tardan 3-5 días hábiles. Ofrecemos envío express para entregas más rápidas.</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h3 className="font-semibold text-blue-700 mb-2">¿Tienen garantía de devolución?</h3>
-            <p className="text-gray-600 text-sm">Sí, ofrecemos 30 días de garantía de devolución si no estás satisfecho con tu compra.</p>
+          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6">
+            <h3 className="font-semibold text-blue-700 mb-2 text-sm md:text-base">¿Tienen garantía de devolución?</h3>
+            <p className="text-gray-600 text-xs md:text-sm">Sí, ofrecemos 30 días de garantía de devolución si no estás satisfecho con tu compra.</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h3 className="font-semibold text-blue-700 mb-2">¿Los productos son seguros para consumo?</h3>
-            <p className="text-gray-600 text-sm">Todos nuestros productos están certificados y cumplen con los más altos estándares de calidad y seguridad.</p>
+          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6">
+            <h3 className="font-semibold text-blue-700 mb-2 text-sm md:text-base">¿Los productos son seguros para consumo?</h3>
+            <p className="text-gray-600 text-xs md:text-sm">Todos nuestros productos están certificados y cumplen con los más altos estándares de calidad y seguridad.</p>
           </div>
         </div>
       </section>
