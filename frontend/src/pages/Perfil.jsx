@@ -12,7 +12,9 @@ const Perfil = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get('/api/orders');
-        setOrders(response.data);
+        // Extraer el array de orders del objeto de respuesta
+        const ordersData = response.data.orders || response.data || [];
+        setOrders(Array.isArray(ordersData) ? ordersData : []);
       } catch (error) {
         console.log('No se pudieron cargar las órdenes:', error.message);
         setOrders([]);
@@ -101,7 +103,7 @@ const Perfil = () => {
         <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10">
           <h2 className="text-xl md:text-2xl font-extrabold text-blue-900 mb-6">Historial de Compras</h2>
           
-          {orders.length > 0 ? (
+          {Array.isArray(orders) && orders.length > 0 ? (
             <div className="space-y-4">
               {orders.map((order, index) => (
                 <div key={index} className="border border-gray-200 rounded-xl p-4 md:p-6">

@@ -16,7 +16,7 @@ app.use(express.json());
 
 // Configuración para deploy
 const PORT = process.env.PORT || 5050;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/osmos';
+const MONGODB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/osmos';
 
 // Conexión a MongoDB
 mongoose.connect(MONGODB_URI)
