@@ -1,15 +1,16 @@
 {
-  "name": "backend",
+  "name": "osmos-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend API para OSMOS e-commerce",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required'"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["ecommerce", "api", "nodejs", "express", "mongodb"],
+  "author": "OSMOS Team",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,6 +25,7 @@
     "nodemon": "^3.1.10"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
