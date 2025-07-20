@@ -1,11 +1,13 @@
 import { useCart } from '../contexts/CartContext.jsx';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import axios from '../config/axios.js';
 
 const Carrito = () => {
   const { items, getTotalPrice, removeFromCart, clearCart, updateQuantity } = useCart();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ nombre: '', email: '', direccion: '' });
   const [pago, setPago] = useState(false);
   const [manual, setManual] = useState(false);
@@ -48,9 +50,10 @@ const Carrito = () => {
       }
 
       // Crear preferencia de pago
-      const response = await axios.post('http://localhost:5050/api/payments/create-preference', {
+      const response = await axios.post('/payments/create-preference', {
         items: items,
-        total: getTotalPrice()
+        total: getTotalPrice(),
+        customer: form
       });
 
       if (response.data.success && response.data.init_point) {
@@ -113,6 +116,7 @@ const Carrito = () => {
               <span className="text-xl md:text-2xl font-black text-indigo-700">${getTotalPrice().toLocaleString('es-CL')}</span>
             </div>
             <button onClick={clearCart} className="bg-gray-200 text-gray-700 px-4 md:px-6 py-2 rounded-full font-bold hover:bg-gray-300 transition w-full mb-4 text-sm md:text-base">Vaciar carrito</button>
+            <button onClick={() => navigate('/checkout')} className="bg-blue-600 text-white px-4 md:px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition w-full text-sm md:text-base">Ir al Checkout</button>
           </div>
           {/* Formulario de envío y pago */}
           <form className="space-y-4 md:space-y-6" onSubmit={handlePagar} autoComplete="off">

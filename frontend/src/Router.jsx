@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Productos from "./pages/Productos";
 import ProductoDetalle from "./pages/ProductoDetalle";
 import Carrito from "./pages/Carrito";
+import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Perfil from "./pages/Perfil";
@@ -43,6 +44,7 @@ const Router = () => {
             <Route path="productos" element={<Productos />} />
             <Route path="producto/:slug" element={<ProductoDetalle />} />
             <Route path="carrito" element={<Carrito />} />
+            <Route path="checkout" element={<RutaPrivada><Checkout /></RutaPrivada>} />
             <Route path="confirmacion" element={<Confirmacion />} />
             <Route path="login" element={<Login />} />
             <Route path="signup" element={<Signup />} />

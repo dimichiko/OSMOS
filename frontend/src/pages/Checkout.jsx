@@ -1,19 +1,56 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import axios from '../config/axios.js';
 
 const Checkout = () => {
   const { items: cart, getTotalPrice } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    address: ''
+  });
 
   const total = getTotalPrice();
 
-  const handlePayment = () => {
-    // Aquí iría la lógica de pago con MercadoPago
-    console.log('Procesando pago...');
-    navigate('/confirmacion');
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handlePayment = async () => {
+    if (!formData.name || !formData.email || !formData.address) {
+      alert('Por favor completa todos los campos');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Crear preferencia de pago en el backend
+      const response = await axios.post('/payments/create-preference', {
+        items: cart,
+        total: total,
+        customer: formData
+      });
+
+      if (response.data.success) {
+        // Redirigir a MercadoPago
+        window.location.href = response.data.init_point;
+      } else {
+        alert('Error al procesar el pago');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al procesar el pago. Intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -77,6 +114,9 @@ const Checkout = () => {
                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Nombre</label>
                 <input 
                   type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-md px-3 md:px-4 py-2 md:py-3 text-sm md:text-base"
                   placeholder="Tu nombre completo"
                 />
@@ -85,6 +125,9 @@ const Checkout = () => {
                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Email</label>
                 <input 
                   type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-md px-3 md:px-4 py-2 md:py-3 text-sm md:text-base"
                   placeholder="tu@email.com"
                 />
@@ -92,6 +135,9 @@ const Checkout = () => {
               <div className="md:col-span-2">
                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Dirección</label>
                 <textarea 
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-md px-3 md:px-4 py-2 md:py-3 text-sm md:text-base"
                   rows="3"
                   placeholder="Tu dirección completa"
@@ -100,13 +146,30 @@ const Checkout = () => {
             </div>
           </div>
 
+          {/* Información de pago de prueba */}
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="font-semibold text-blue-800 mb-2">💳 Información de Pago de Prueba</h3>
+            <p className="text-sm text-blue-700 mb-2">
+              Para probar el pago, usa estos datos de MercadoPago:
+            </p>
+            <ul className="text-xs text-blue-600 space-y-1">
+              <li>• Tarjeta: 4509 9535 6623 3704</li>
+              <li>• Fecha: 11/25</li>
+              <li>• CVV: 123</li>
+              <li>• DNI: 12345678</li>
+            </ul>
+          </div>
+
           {/* Botón de pago */}
           <div className="text-center">
             <button 
               onClick={handlePayment}
-              className="bg-blue-600 text-white font-bold py-3 md:py-4 px-8 md:px-12 rounded-lg hover:bg-blue-700 transition text-sm md:text-base"
+              disabled={loading}
+              className={`bg-blue-600 text-white font-bold py-3 md:py-4 px-8 md:px-12 rounded-lg transition text-sm md:text-base ${
+                loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+              }`}
             >
-              Proceder al Pago
+              {loading ? 'Procesando...' : 'Pagar con MercadoPago'}
             </button>
           </div>
         </div>
