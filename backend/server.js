@@ -24,10 +24,15 @@ mongoose.connect(MONGODB_URI)
   .catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
 // Rutas
+console.log('Cargando rutas...');
 app.use('/api', userRoutes);
+console.log('✅ Rutas de usuarios cargadas');
 app.use('/api', productRoutes);
+console.log('✅ Rutas de productos cargadas');
 app.use('/api', orderRoutes);
+console.log('✅ Rutas de órdenes cargadas');
 app.use('/api', paymentsRoutes);
+console.log('✅ Rutas de pagos cargadas');
 
 // Ruta de prueba para verificar que el servidor funciona
 app.get('/', (req, res) => {
@@ -36,6 +41,61 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     status: 'online'
   });
+});
+
+// Rutas de pagos directas (solución temporal)
+app.get('/api/payments/test', (req, res) => {
+  console.log('✅ Ruta /api/payments/test accedida');
+  res.json({ 
+    message: 'Rutas de pagos funcionando correctamente',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.post('/api/payments/create-preference', async (req, res) => {
+  console.log('✅ Ruta /api/payments/create-preference accedida');
+  
+  try {
+    const { items, total, customer } = req.body;
+    console.log('Datos recibidos:', { items, total, customer });
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Carrito vacío o inválido' });
+    }
+
+    // Validar datos del cliente (aceptar tanto inglés como español)
+    const customerName = customer.name || customer.nombre;
+    const customerEmail = customer.email;
+    const customerAddress = customer.address || customer.direccion;
+    
+    if (!customerName || !customerEmail || !customerAddress) {
+      return res.status(400).json({ 
+        error: 'Información del cliente incompleta',
+        required: ['name/nombre', 'email', 'address/direccion'],
+        received: { name: customerName, email: customerEmail, address: customerAddress }
+      });
+    }
+
+    console.log('Modo de prueba: Simulando preferencia de pago');
+    
+    // Simular respuesta de MercadoPago
+    const mockResponse = {
+      success: true,
+      init_point: 'http://localhost:5173/confirmacion?status=success&payment_id=TEST123&preference_id=TEST456',
+      preference_id: 'TEST456',
+      sandbox_init_point: 'http://localhost:5173/confirmacion?status=success&payment_id=TEST123&preference_id=TEST456'
+    };
+
+    console.log('Respuesta simulada:', mockResponse);
+    return res.json(mockResponse);
+
+  } catch (error) {
+    console.error('Error creando preferencia de pago:', error);
+    res.status(500).json({ 
+      error: 'Error al procesar el pago',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
 });
 
 // Middleware de manejo de errores

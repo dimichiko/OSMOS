@@ -1,31 +1,49 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext.jsx';
 import { Helmet } from 'react-helmet-async';
 
 const Confirmacion = () => {
   const [searchParams] = useSearchParams();
-  const { clearCart } = useCart();
+  const navigate = useNavigate();
+  const { clearCart, items } = useCart();
   const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   
   const status = searchParams.get('status') || 'success';
   const paymentId = searchParams.get('payment_id');
   const preferenceId = searchParams.get('preference_id');
 
-  useEffect(() => {
-    // Limpiar el carrito cuando se confirma el pago
+  // Arreglar bucle infinito - usar useCallback
+  const processOrder = useCallback(() => {
     if (status === 'success') {
-      clearCart();
+      // Limpiar el carrito solo si hay items
+      if (items.length > 0) {
+        clearCart();
+      }
+      
       // Generar detalles del pedido
       setOrderDetails({
-        orderNumber: Math.random().toString(36).substr(2, 9).toUpperCase(),
-        paymentId: paymentId,
-        preferenceId: preferenceId,
+        orderNumber: `OSM${Date.now().toString().slice(-6)}`,
+        paymentId: paymentId || 'N/A',
+        preferenceId: preferenceId || 'N/A',
         date: new Date().toLocaleDateString('es-CL'),
-        time: new Date().toLocaleTimeString('es-CL')
+        time: new Date().toLocaleTimeString('es-CL'),
+        total: items.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0)
       });
     }
-  }, [status, clearCart, paymentId, preferenceId]);
+    setLoading(false);
+  }, [status, clearCart, paymentId, preferenceId, items]);
+
+  useEffect(() => {
+    // Verificar que venimos de un pago válido
+    if (!status) {
+      navigate('/');
+      return;
+    }
+    
+    processOrder();
+  }, [processOrder, navigate, status]);
 
   const getStatusInfo = () => {
     switch (status) {
@@ -35,7 +53,8 @@ const Confirmacion = () => {
           title: '¡Pago Exitoso!',
           message: 'Tu pedido ha sido procesado correctamente. Recibirás un email de confirmación pronto.',
           bgColor: 'bg-green-100',
-          textColor: 'text-green-600'
+          textColor: 'text-green-600',
+          borderColor: 'border-green-200'
         };
       case 'pending':
         return {
@@ -43,7 +62,8 @@ const Confirmacion = () => {
           title: 'Pago Pendiente',
           message: 'Tu pago está siendo procesado. Te notificaremos cuando se confirme.',
           bgColor: 'bg-yellow-100',
-          textColor: 'text-yellow-600'
+          textColor: 'text-yellow-600',
+          borderColor: 'border-yellow-200'
         };
       case 'failure':
         return {
@@ -51,7 +71,8 @@ const Confirmacion = () => {
           title: 'Pago Fallido',
           message: 'Hubo un problema con tu pago. Por favor, intenta de nuevo.',
           bgColor: 'bg-red-100',
-          textColor: 'text-red-600'
+          textColor: 'text-red-600',
+          borderColor: 'border-red-200'
         };
       default:
         return {
@@ -59,12 +80,24 @@ const Confirmacion = () => {
           title: '¡Pago Exitoso!',
           message: 'Tu pedido ha sido procesado correctamente.',
           bgColor: 'bg-green-100',
-          textColor: 'text-green-600'
+          textColor: 'text-green-600',
+          borderColor: 'border-green-200'
         };
     }
   };
 
   const statusInfo = getStatusInfo();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Procesando confirmación...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 md:py-12 px-4">
@@ -85,17 +118,33 @@ const Confirmacion = () => {
 
         {status === 'success' && orderDetails && (
           <div className="space-y-4 md:space-y-6">
-            <div className="bg-gray-50 rounded-lg p-4 md:p-6">
+            <div className={`bg-gray-50 rounded-lg p-4 md:p-6 border ${statusInfo.borderColor}`}>
               <h2 className="font-semibold text-gray-900 mb-3 text-sm md:text-base">Detalles del Pedido</h2>
               <div className="text-sm md:text-base text-gray-600 space-y-2">
                 <p><span className="font-medium">Número de pedido:</span> #{orderDetails.orderNumber}</p>
-                {orderDetails.paymentId && (
+                {orderDetails.paymentId && orderDetails.paymentId !== 'N/A' && (
                   <p><span className="font-medium">ID de pago:</span> {orderDetails.paymentId}</p>
+                )}
+                {orderDetails.preferenceId && orderDetails.preferenceId !== 'N/A' && (
+                  <p><span className="font-medium">ID de preferencia:</span> {orderDetails.preferenceId}</p>
                 )}
                 <p><span className="font-medium">Estado:</span> <span className={statusInfo.textColor}>Confirmado</span></p>
                 <p><span className="font-medium">Fecha:</span> {orderDetails.date}</p>
                 <p><span className="font-medium">Hora:</span> {orderDetails.time}</p>
+                {orderDetails.total > 0 && (
+                  <p><span className="font-medium">Total:</span> ${orderDetails.total.toLocaleString('es-CL')}</p>
+                )}
               </div>
+            </div>
+            
+            {/* Información adicional */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-800 mb-2 text-sm">📧 Próximos pasos</h3>
+              <ul className="text-xs text-blue-700 space-y-1 text-left">
+                <li>• Recibirás un email de confirmación</li>
+                <li>• Tu pedido será procesado en 24-48 horas</li>
+                <li>• Te contactaremos para coordinar el envío</li>
+              </ul>
             </div>
           </div>
         )}
@@ -122,6 +171,17 @@ const Confirmacion = () => {
               className="block w-full bg-red-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-red-700 transition text-sm md:text-base"
             >
               Intentar de Nuevo
+            </Link>
+          </div>
+        )}
+
+        {status === 'pending' && (
+          <div className="mt-4">
+            <Link 
+              to="/perfil" 
+              className="block w-full bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-yellow-700 transition text-sm md:text-base"
+            >
+              Ver Estado del Pedido
             </Link>
           </div>
         )}
