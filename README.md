@@ -164,19 +164,9 @@ OSMOS/
 - [ ] Notificaciones push
 - [ ] PWA
 
-## 📊 Criterios de Evaluación
-
-| Criterio | Peso | Estado |
-|----------|------|--------|
-| Gestión de Productos | 30% | ✅ Completado |
-| Autenticación | 30% | ✅ Completado |
-| Pasarela de Pagos | 20% | ✅ Completado |
-| Deploy | 20% | ✅ Completado |
-| Entrega a tiempo | 10% | ✅ Completado |
-
 ## 👨‍💻 Autor
 
-**Dimitri** - Desarrollador Fullstack
+**Dimitris vamvoukas** - Desarrollador Fullstack
 
 ## 📄 Licencia
 
