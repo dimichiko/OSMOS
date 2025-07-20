@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ElectrolitosState from "./contexts/Electrolitos/ElectrolitosState";
-import Layout from "./components/layout/Index";
+import Layout from "./components/layout/index";
 
 // Pages
 import Home from "./pages/Home";
